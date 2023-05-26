@@ -1,26 +1,135 @@
 import { LightningElement } from 'lwc';
 import { loadScript } from 'lightning/platformResourceLoader';
+import Dchart from '@salesforce/resourceUrl/d3Chart';
+import exp from '@salesforce/resourceUrl/highChartExport';
+import solidGauge from '@salesforce/resourceUrl/solidGauge';
+import highChartMore from '@salesforce/resourceUrl/highChartMore';
+import highchartsURL from '@salesforce/resourceUrl/highChart';
 import akHighChart from '@salesforce/resourceUrl/akHighChart';
+import 	map from '@salesforce/resourceUrl/map';
+import exporting from '@salesforce/resourceUrl/highChart';
+import HIGHCHARTS from '@salesforce/resourceUrl/HIGHCHARTS';
 
 
 
 
 export default class HighhChart extends LightningElement {
 
+ scriptloaded = false;
     
+    constructor(){
+        super();
+        console.log('constructor ');
+        
+    }
+
     connectedCallback() {
         console.log('In connectedCallback');
-        Promise.allSettled([
-            
-           
+        Promise.all([
+            loadScript(this, highChartMore),
             loadScript(this, akHighChart + '/akHighChart/highmaps.js')
         ]).then(() => {
             console.log('loaded');
-            this.renderMap();
+           this.scriptloaded = true;
+            this.gaugeChart();
+             this.renderMap();
         }).catch(error => {
             console.error(error);
         });
     }
+    renderedCallback() {
+        console.log('In renderedCallback');
+        if(this.scriptloaded){
+           
+        }
+         
+        // loadScript(this, highchartsURL)
+        // .then(()=>{
+        //     console.log('highchart ');
+        //     this.gaugeChart();
+        //      loadScript(this, map).
+        //      then(()=>{
+        //          console.log('map loded');
+        //         // this.renderMap();
+           
+        //      })
+        //       .catch(error => console.log("ERROR: map.js"))
+        // })
+        // .catch(error => console.log("ERROR: highchart.js"));
+
+        
+    }
+
+//gauge
+gaugeChart(){
+const gauge = this.template.querySelector('.chart');
+gauge.innerHTML = 'Lodaing gaugeChart....';
+  Highcharts.chart(gauge, {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie'
+            },
+            title: {
+                text: 'Browser market shares in May, 2020',
+                align: 'left'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            accessibility: {
+                point: {
+                    valueSuffix: '%'
+                }
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                    }
+                }
+            },
+            series: [{
+                name: 'Brands',
+                colorByPoint: true,
+                data: [{
+                    name: 'Chrome',
+                    y: 70.67,
+                    sliced: true,
+                    selected: true
+                }, {
+                    name: 'Edge',
+                    y: 14.77
+                },  {
+                    name: 'Firefox',
+                    y: 4.86
+                }, {
+                    name: 'Safari',
+                    y: 2.63
+                }, {
+                    name: 'Internet Explorer',
+                    y: 1.53
+                },  {
+                    name: 'Opera',
+                    y: 1.40
+                }, {
+                    name: 'Sogou Explorer',
+                    y: 0.84
+                }, {
+                    name: 'QQ',
+                    y: 0.51
+                }, {
+                    name: 'Other',
+                    y: 2.6
+                }]
+            }]
+        });
+
+}
 
     // renderedCallback(){
     //     this.fetchDataAndRenderMap();
@@ -89,14 +198,13 @@ export default class HighhChart extends LightningElement {
         fetch('https://code.highcharts.com/mapdata/countries/us/us-all-all.topo.json')
             .then((response) => response.json())
             .then((mapData) => {
-                console.log('mapData ', mapData);
-                let charts = this.template.querySelector('div');
-                charts.innerHTML = 'Rendering map...';
+                 console.log('mapData constructor', mapData);
+               // this.mapDatajs = mapData;
                 if (mapData) {
                     console.log('mapData Rendering charts');
-                   charts.innerHTML = 'Rendering charts...';
+                   mapchart.innerHTML = 'Rendering charts...';
                    
-                        Highcharts.mapChart(this.template.querySelector('div'), {
+                        Highcharts.mapChart(mapchart, {
                             chart: {
                                 map: mapData,
                                 borderWidth: 1,
@@ -165,9 +273,13 @@ export default class HighhChart extends LightningElement {
                         });
                     
                 }
-            }).catch((error) => {
+            })
+            .catch((error) => {
                 console.log(error);
             });
+       let mapchart = this.template.querySelector('.chart1');
+                mapchart.innerHTML = 'Rendering map...';
+       
     }
 
 }
